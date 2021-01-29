@@ -1,4 +1,4 @@
-/* arduino-1st-shield.hpp
+/* arduino-1st-shield.h
  *
  * Copyright 2021 Dominik Rzecki
  *
@@ -17,10 +17,11 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#pragma once
+#ifndef _1ST_SHIELD
+#define _1ST_SHIELD
 
 #include <Arduino.h>
-#include "arduino-7-segment-display-ctl"
+#include <arduino-7-segment-display-ctl.h>
 
 class _1stShield {
   public:
@@ -61,3 +62,5 @@ class _1stShield {
 
     bool m_buttonState[2] = {0, 0};
 };
+
+#endif //_1ST_SHIELD

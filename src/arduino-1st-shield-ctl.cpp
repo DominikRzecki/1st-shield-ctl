@@ -18,8 +18,7 @@
  */
 
  
-
-#include "arduino-1st-shield-ctl.hpp"
+#include "arduino-1st-shield-ctl.h"
 
 _1stShield::_1stShield() {
 	pinMode(12, OUTPUT);
@@ -79,11 +78,11 @@ int _1stShield::get_POT() {
 
 bool _1stShield::get_button(uint8_t button) {
 	update_buttons();
-	return buttonState[button];
+	return m_buttonState[button];
 }
 
 void _1stShield::register_callback_on_pressed(uint8_t button, void (*func)(void*), void* Data) {
-	m_pressedData[button] = func;
+	m_pressedFunc[button] = func;
 	m_pressedData[button] = Data;
 }
 
@@ -93,7 +92,7 @@ void _1stShield::register_callback_on_released(uint8_t button, void (*func)(void
 }
 
 void _1stShield::update() {
-	m_7SD.Update();
+	m_2x7SD.Update();
 	update_buttons();
 }
 
