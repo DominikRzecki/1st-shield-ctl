@@ -1,4 +1,4 @@
-/* 1stShieldCtl.hpp
+/* arduino-1st-shield.hpp
  *
  * Copyright 2021 Dominik Rzecki
  *
@@ -20,6 +20,7 @@
 #pragma once
 
 #include <Arduino.h>
+#include "arduino-7-segment-display-ctl"
 
 class _1stShield {
   public:
@@ -35,7 +36,7 @@ class _1stShield {
 
     _1stShield();
 
-		void set_DS7(uint8_t num);
+		void set_2x7SD(uint8_t num);
     void set_RGB(int8_t R = -1, int8_t G = -1, int8_t B = -1);
 		void set_LED(LED led, uint8_t level);
 
@@ -50,13 +51,13 @@ class _1stShield {
     
   private:
  
-    SegmentDisplay7x2 m_7SD{5, 2, 6, 8, 7, 3, 4, true};
+    _2x7SegmentDisplay m_2x7SD{5, 2, 6, 8, 7, 3, 4, true};
 
-    void (*pressedFunc[2])(void*) = {nullptr, nullptr};
-    void (*releasedFunc[2])(void*) = {nullptr, nullptr};
+    void (*m_pressedFunc[2])(void*) = {nullptr, nullptr};
+    void (*m_releasedFunc[2])(void*) = {nullptr, nullptr};
 
-    void* pressedData[2] = {nullptr, nullptr};
-    void* releasedData[2] = {nullptr, nullptr};
+    void* m_pressedData[2] = {nullptr, nullptr};
+    void* m_releasedData[2] = {nullptr, nullptr};
 
-    bool buttonState[2] = {0, 0};
+    bool m_buttonState[2] = {0, 0};
 };

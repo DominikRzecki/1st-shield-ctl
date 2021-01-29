@@ -1,4 +1,4 @@
-/* 1stShieldCtl.cpp
+/* arduino-1st-shield.cpp
  *
  * Copyright 2021 Dominik Rzecki
  *
@@ -35,8 +35,8 @@ _1stShield::_1stShield() {
 	pinMode(A5, INPUT);
 }
 
-void _1stShield::set_DS7(uint8_t num) {
-	m_7SD.Set(num);
+void _1stShield::set_2x7SD(uint8_t num) {
+	m_2x7SD.Set(num);
 }
 
 void _1stShield::set_RGB(int8_t R, int8_t G, int8_t B) {
@@ -83,13 +83,13 @@ bool _1stShield::get_button(uint8_t button) {
 }
 
 void _1stShield::register_callback_on_pressed(uint8_t button, void (*func)(void*), void* Data) {
-	pressedData[button] = func;
-	pressedData[button] = Data;
+	m_pressedData[button] = func;
+	m_pressedData[button] = Data;
 }
 
 void _1stShield::register_callback_on_released(uint8_t button, void (*func)(void*), void* Data) {
-	releasedFunc[button] = func;
-	releasedData[button] = Data;
+	m_releasedFunc[button] = func;
+	m_releasedData[button] = Data;
 }
 
 void _1stShield::update() {
@@ -100,16 +100,16 @@ void _1stShield::update() {
 void _1stShield::update_buttons(){
 	bool buttonStateNew[2];
       
-	for ( int button = 0; button < 2; button++) {
+	for ( int button = 0; button < 2; button++ ) {
 		buttonStateNew[button] = !analogRead(A3+button);
-		if (buttonStateNew[button] != static_cast<bool> (buttonState[button])) {
-			if (buttonStateNew[button] == 1 && pressedFunc[button] != nullptr) {
-				pressedFunc[button](pressedData[button]);
+		if ( buttonStateNew[button] != m_buttonState[button] ) {
+			if ( buttonStateNew[button] == 1 && m_pressedFunc[button] != nullptr ) {
+				m_pressedFunc[button](m_pressedData[button]);
 			}
-			if (buttonStateNew[button] == 0 && releasedFunc[button] != nullptr){
-				releasedFunc[button](releasedData[button]);
+			if ( buttonStateNew[button] == 0 && m_releasedFunc[button] != nullptr ){
+				m_releasedFunc[button](m_releasedData[button]);
 			}
 		}
-		buttonState[button] = buttonStateNew[button];
+		m_buttonState[button] = buttonStateNew[button];
 	}
 }

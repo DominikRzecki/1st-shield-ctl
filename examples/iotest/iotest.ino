@@ -49,13 +49,13 @@ void loop() {
     switch( iterator ) {
       case DisplayEnum::NONE:
         break;
-      case DisplayEnum::DS7: shield.set_DS7(num/(float)1024*100);
+      case DisplayEnum::DS7: shield.set_2x7SD(num/(float)1024*100);
         break;
-      case DisplayEnum::RGB_R_LED: shield.set_RGB(num/(float)1024*256, -1, -1);
+      case DisplayEnum::RGB_R_LED: shield.set_LED(_1stShield::LED::RGB_RED, num/(float)1024*256);
         break;
-      case DisplayEnum::RGB_G_LED: shield.set_RGB(-1, num/(float)1024*256, -1);
+      case DisplayEnum::RGB_G_LED: shield.set_LED(_1stShield::LED::RGB_GREEN, num/(float)1024*256);
         break;
-      case DisplayEnum::RGB_B_LED: shield.set_RGB(-1, -1, num/(float)1024*256);
+      case DisplayEnum::RGB_B_LED: shield.set_LED(_1stShield::LED::RGB_BLUE, num/(float)1024*256);
         break;
       case DisplayEnum::RED_LED: shield.set_LED(_1stShield::LED::RED, num/(float)1024*255);
         break;
