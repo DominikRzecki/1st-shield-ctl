@@ -68,7 +68,7 @@ void loop() {
     }
     
     shield.update();
-    
+    delay(1);
   }
 }
 
