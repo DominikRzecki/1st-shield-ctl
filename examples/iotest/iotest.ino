@@ -1,4 +1,4 @@
-/* 1stShieldCtl.cpp
+/* iotest.ino
  *
  * Copyright 2021 Dominik Rzecki
  *
@@ -19,97 +19,67 @@
 
  
 
-#include "1stShieldCtl.hpp"
+#include <arduino-1st-shield-ctl.hpp>
 
-_1stShield::_1stShield() {
-	pinMode(12, OUTPUT);
-	pinMode(13, OUTPUT);
-	pinMode(11, OUTPUT);
-	pinMode(10, OUTPUT);
-	pinMode(9, OUTPUT);
-	pinMode(A0, OUTPUT);
-	pinMode(A1, OUTPUT);
-	pinMode(A2, OUTPUT);
-	pinMode(A3, INPUT);
-	pinMode(A4, INPUT);
-	pinMode(A5, INPUT);
+void Iterate(void* Data);
+
+enum DisplayEnum {
+  NONE = 0,
+  DS7 = 1,
+  RGB_R_LED = 2,
+  RGB_G_LED = 3,
+  RGB_B_LED = 4,
+  RED_LED = 5,
+  YELLOW_LED = 6,
+  GREEN_LED = 7
+};
+
+void setup() {
 }
 
-void _1stShield::set_DS7(uint8_t num) {
-	m_7SD.Set(num);
+void loop() {
+  _1stShield shield;
+  int iterator = DisplayEnum::NONE;
+  int num;
+  
+  shield.register_callback_on_released(0, &Iterate, static_cast<void*> (&iterator));
+  
+  while(true){
+    num = shield.get_POT();
+    switch( iterator ) {
+      case DisplayEnum::NONE:
+        break;
+      case DisplayEnum::DS7: shield.set_DS7(num/(float)1024*100);
+        break;
+      case DisplayEnum::RGB_R_LED: shield.set_RGB(num/(float)1024*256, -1, -1);
+        break;
+      case DisplayEnum::RGB_G_LED: shield.set_RGB(-1, num/(float)1024*256, -1);
+        break;
+      case DisplayEnum::RGB_B_LED: shield.set_RGB(-1, -1, num/(float)1024*256);
+        break;
+      case DisplayEnum::RED_LED: shield.set_LED(_1stShield::LED::RED, num/(float)1024*255);
+        break;
+      case DisplayEnum::YELLOW_LED: shield.set_LED(_1stShield::LED::YELLOW, num/(float)1024*255);
+        break;
+      case DisplayEnum::GREEN_LED: shield.set_LED(_1stShield::LED::GREEN, num/(float)1024*255);
+        break;
+      default:
+        break;
+    }
+    
+    shield.update();
+    
+  }
 }
 
-void _1stShield::set_RGB(int8_t R, int8_t G, int8_t B) {
-	int8_t* arr[3] = {&R, &G, &B};
-	for (auto& i : arr) {
-		if (*i != -1) {
-			analogWrite(9 + (&i - &arr[0]), *i);
-		}
-	}
-}
+void Iterate(void* Data) {
+  
+  int* iterator = static_cast<int*> (Data);
+  
+  if(*iterator != DisplayEnum::GREEN_LED) {
+    (*iterator)++;
+  } else {
+    *iterator = DisplayEnum::NONE;
+  }
+} 
 
-void _1stShield::set_LED(LED led, uint8_t level) {
-	switch (led) {
-		case LED::RED:
-			digitalWrite(A0, level);
-			break;
-		case LED::YELLOW:
-			digitalWrite(A1, level);
-			break;
-		case LED::GREEN:
-			digitalWrite(A2, level);
-			break;
-		case LED::RGB_RED:
-			analogWrite(9, level);
-			break;
-		case LED::RGB_GREEN:
-			analogWrite(10, level);
-			break;
-		case LED::RGB_BLUE:
-			analogWrite(11, level);
-			break;
-		default:
-			break;
-	}
-}
-
-int _1stShield::get_POT() {
-	return analogRead(A5);
-}
-
-bool _1stShield::get_button(uint8_t button) {
-	update_buttons();
-	return buttonState[button];
-}
-
-void _1stShield::register_callback_on_pressed(uint8_t button, void (*func)(void*), void* Data) {
-	pressedData[button] = func;
-	pressedData[button] = Data;
-}
-
-void _1stShield::register_callback_on_released(uint8_t button, void (*func)(void*), void* Data) {
-	releasedFunc[button] = func;
-	releasedData[button] = Data;
-}
-
-void _1stShield::update() {
-	m_7SD.Update();
-	update_buttons();
-}
-
-void _1stShield::update_buttons(){
-	bool buttonStateNew[2];
-      
-	for ( int button = 0; button < 2; button++) {
-		buttonStateNew[button] = !analogRead(A3+button);
-		if (buttonStateNew[button] != static_cast<bool> (buttonState[button])) {
-			if (buttonStateNew[button] == 1 && pressedFunc[button] != nullptr) {
-				pressedFunc[button](pressedData[button]);
-			}
-			if (buttonStateNew[button] == 0 && releasedFunc[button] != nullptr){
-				releasedFunc[button](releasedData[button]);
-			}
-		}
-		buttonState[button] = buttonStateNew[button];
-	}
-}

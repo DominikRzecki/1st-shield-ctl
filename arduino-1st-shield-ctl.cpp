@@ -19,7 +19,7 @@
 
  
 
-#include "1stShieldCtl.hpp"
+#include "arduino-1st-shield-ctl.hpp"
 
 _1stShield::_1stShield() {
 	pinMode(12, OUTPUT);
